@@ -1,0 +1,26 @@
+[
+  {
+    "id": "user-1",
+    "email": "john.doe@example.com",
+    "username": "johndoe",
+    "createdAt": "2025-11-15T10:30:00Z",
+    "emailNotifications": true,
+    "timezone": "America/New_York"
+  },
+  {
+    "id": "user-2",
+    "email": "jane.smith@example.com",
+    "username": "janesmith",
+    "createdAt": "2025-10-20T14:45:00Z",
+    "emailNotifications": false,
+    "timezone": "Europe/London"
+  },
+  {
+    "id": "user-3",
+    "email": "alex.wilson@example.com",
+    "username": "alexw",
+    "createdAt": "2025-09-05T09:15:00Z",
+    "emailNotifications": true,
+    "timezone": "Asia/Tokyo"
+  }
+]

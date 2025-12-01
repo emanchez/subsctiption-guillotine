@@ -1,0 +1,102 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Netflix Premium",
+      "cost": 15.99,
+      "cycle": "monthly",
+      "renewalDate": "2025-12-15T00:00:00Z",
+      "createdAt": "2025-11-15T10:30:00Z",
+      "updatedAt": "2025-11-15T10:30:00Z",
+      "userId": "user-1",
+      "isActive": true,
+      "reminderAlert": [
+        { "timeframe": "days", "value": 3 },
+        { "timeframe": "hours", "value": 24 }
+      ],
+      "category": "entertainment",
+      "notes": "Shared with family"
+    },
+    {
+      "id": 2,
+      "name": "Spotify Premium",
+      "cost": 9.99,
+      "cycle": "monthly",
+      "renewalDate": "2025-12-20T00:00:00Z",
+      "createdAt": "2025-11-20T14:45:00Z",
+      "updatedAt": "2025-11-20T14:45:00Z",
+      "userId": "user-1",
+      "isActive": true,
+      "reminderAlert": [{ "timeframe": "days", "value": 7 }],
+      "category": "entertainment"
+    },
+    {
+      "id": 3,
+      "name": "AWS Developer",
+      "cost": 29.00,
+      "cycle": "monthly",
+      "renewalDate": "2025-12-01T00:00:00Z",
+      "createdAt": "2025-10-20T14:45:00Z",
+      "updatedAt": "2025-11-25T09:00:00Z",
+      "userId": "user-2",
+      "isActive": true,
+      "reminderAlert": [{ "timeframe": "days", "value": 1 }],
+      "category": "development",
+      "notes": "For personal projects"
+    },
+    {
+      "id": 4,
+      "name": "Microsoft 365",
+      "cost": 69.99,
+      "cycle": "yearly",
+      "renewalDate": "2026-03-15T00:00:00Z",
+      "createdAt": "2025-09-05T09:15:00Z",
+      "updatedAt": "2025-09-05T09:15:00Z",
+      "userId": "user-3",
+      "isActive": true,
+      "category": "productivity"
+    },
+    {
+      "id": 5,
+      "name": "Old Gym Membership",
+      "cost": 49.99,
+      "cycle": "monthly",
+      "renewalDate": "2025-12-10T00:00:00Z",
+      "createdAt": "2025-06-01T12:00:00Z",
+      "updatedAt": "2025-11-01T08:00:00Z",
+      "userId": "user-1",
+      "isActive": false,
+      "category": "fitness",
+      "notes": "Cancelled - switching to home workouts"
+    },
+    {
+      "id": 6,
+      "name": "Adobe Creative Cloud",
+      "cost": 52.99,
+      "cycle": "monthly",
+      "renewalDate": "2025-12-05T00:00:00Z",
+      "createdAt": "2025-10-01T16:20:00Z",
+      "updatedAt": "2025-10-01T16:20:00Z",
+      "userId": "user-2",
+      "isActive": true,
+      "reminderAlert": [
+        { "timeframe": "days", "value": 5 },
+        { "timeframe": "hours", "value": 12 }
+      ],
+      "category": "productivity",
+      "notes": "Used for design work"
+    },
+    {
+      "id": 7,
+      "name": "New York Times",
+      "cost": 4.99,
+      "cycle": "monthly",
+      "renewalDate": "2025-12-25T00:00:00Z",
+      "createdAt": "2025-11-01T11:30:00Z",
+      "updatedAt": "2025-11-01T11:30:00Z",
+      "userId": "user-3",
+      "isActive": true,
+      "category": "news"
+    }
+  ]
+}
