@@ -19,7 +19,7 @@ const Nav = (props: NavProps): JSX.Element => {
             <Link href="/">Home</Link>
           </li>
           <li>
-            <Link href="/">Login</Link>
+            <Link href="/">Logout</Link>
           </li>
         </ul>
       </nav>

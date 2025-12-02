@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export default function TestPage() {
+const TestPage = () => {
   const [userId, setUserId] = useState("user-1");
   const [resp, setResp] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -74,4 +74,6 @@ export default function TestPage() {
       </pre>
     </main>
   );
-}
+};
+
+export default TestPage;
