@@ -12,7 +12,7 @@ export class HttpError extends Error {
 
 // PROMISE HANDLERS
 // Small helpers to create a consistent Result<T> shape for success/failure
-const createSuccess = <T,>(value: T, status = 200): Result<T> => {
+const createSuccess = <T>(value: T, status = 200): Result<T> => {
   const result: Result<T> = {
     success: true,
     value: value,
@@ -22,7 +22,7 @@ const createSuccess = <T,>(value: T, status = 200): Result<T> => {
 };
 
 // Creates a failure Result with an error message and status.
-const createFailure = <T,>(error: string, status = 500): Result<T> => {
+const createFailure = <T>(error: string, status = 500): Result<T> => {
   const result: Result<T> = {
     success: false,
     error: error,
@@ -33,30 +33,19 @@ const createFailure = <T,>(error: string, status = 500): Result<T> => {
 
 // Usage: wrap any async operation with safeAsync(() => fetchStuff())
 // Returns a typed Result<T> where callers can inspect `success`/`value`/`error` and `status`.
-export const safeAsync = async <T,>(
+export const safeAsync = async <T>(
   fn: () => Promise<T>
 ): Promise<Result<T>> => {
   try {
     const result = await fn();
     return createSuccess(result, 200);
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-
     // If the thrown error is an HttpError, preserve its status
     if (error instanceof HttpError) {
-      return createFailure<T>(msg, error.status);
+      return createFailure<T>(error.message, error.status);
     }
-
-    // Basic heuristic mapping for common errors -> status codes
-    if (msg.toLowerCase().includes("missing userid")) {
-      return createFailure<T>(msg, 400);
-    }
-    if (msg.includes("not found")) {
-      return createFailure<T>(msg, 404);
-    }
-    if (msg.toLowerCase().includes("invalid")) {
-      return createFailure<T>(msg, 400);
-    }
+    // TODO remove this section
+    const msg = error instanceof Error ? error.message : String(error);
     // Fallback to 500
     return createFailure<T>(msg);
   }

@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  // Connection URLs are no longer supported in schema files.
+  // Move the DATABASE_URL for migrations to prisma.config.ts and
+  // pass either `adapter` or `accelerateUrl` to the PrismaClient constructor.
+  // See: https://pris.ly/d/config-datasource and https://pris.ly/d/prisma7-client-config
+}
+
+model User {
+  id                 String   @id
+  email              String?  
+  username           String?
+  timezone           String?
+  emailNotifications Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  subscriptions      Subscription[]
+  sessions           Session[]
+}
+
+model Subscription {
+  id          Int      @id @default(autoincrement())
+  name        String
+  cost        Float
+  cycle       String
+  renewalDate DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  isActive    Boolean  @default(true)
+  category    String?
+  notes       String?
+  /// Stores an array of ReminderAlert objects as defined in src/types/subscription.ts (reminderAlert: ReminderAlert[])
+  reminder    Json?
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Session {
+  sessionId String   @id
+  userId    String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+}

@@ -1,6 +1,5 @@
-import fs from "fs/promises";
-import path from "path";
-import { safeAsync } from "@/util/helpers";
+import { prisma } from "@/lib/prisma";
+import { HttpError, safeAsync } from "@/util/helpers";
 import { User } from "@/types/user";
 import { Subscription } from "@/types/subscription";
 
@@ -10,45 +9,18 @@ export const GET = async (req: Request) => {
   const url = new URL(req.url);
   const userID =
     url.searchParams.get("userID") || req.headers.get("x-user-id") || null;
-  //temp line: get data from json file that is acting as our database
-  const dataDir = path.join(process.cwd(), "src", "data");
 
   const res = await safeAsync(async () => {
     // if userID param is empty
-    if (!userID) throw new Error("Missing userID");
-
-    const [usersRaw, subsRaw] = await Promise.all([
-      //temp line: get data from json file that is acting as our database
-      fs.readFile(path.join(dataDir, "users.json"), "utf8"),
-      fs.readFile(path.join(dataDir, "subs.json"), "utf8"),
-    ]);
-
-    // HANDLE USER
-    const users = JSON.parse(usersRaw) as User[];
-
-    // lookup user in database
-    const user = users.find((u) => u.id === userID);
-    // if user is not found throw an error
-    if (!user) throw new Error("User not found");
+    if (!userID) throw new HttpError(400, "Missing userID");
+    const user = await prisma.user.findUnique({ where: { id: userID } });
+    if (!user) throw new HttpError(404, "User not found");
 
     // HANDLE SUBS DATA
-    const subsParsed = JSON.parse(subsRaw);
-
-    let subs: Subscription[];
-    if (Array.isArray(subsParsed)) {
-      subs = subsParsed as Subscription[];
-    } else if (Array.isArray(subsParsed.data)) {
-      subs = subsParsed.data as Subscription[];
-    } else if (Array.isArray(subsParsed.subscriptions)) {
-      subs = subsParsed.subscriptions as Subscription[];
-    } else {
-      throw new Error(
-        "Invalid subs.json format: expected an array or { data: [...] } or { subscriptions: [...] }"
-      );
-    }
-
-    // find all subscriptions associated with user
-    const userSubs = subs.filter((s) => s.userId === user.id);
+    const userSubs = await prisma.subscription.findMany({
+      where: { userId: userID },
+      orderBy: { renewalDate: "asc" },
+    });
 
     // Serialize dates to ISO strings for JSON transport
     const serialized = userSubs.map((s) => ({
