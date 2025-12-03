@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import SubsContainer from "@/components/SubsContainer";
 import SubsCard from "@/components/SubsCard";
 import { User } from "@prisma/client";
-import { ApiSubscription } from "@/types/subscription";
+import { ApiSubscription } from "@/lib/types/subscription";
 
 const Dashboard = async () => {
   // simple dev shim: use cookie userId or fallback to a dev user
@@ -15,7 +15,7 @@ const Dashboard = async () => {
     process.env.NEXT_PUBLIC_APP_URL ||
     (process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : `http://localhost:${process.env.PORT || 3000}`); //TODO: remove hard-coded dev route, use env variable instead
+      : `http://localhost:${process.env.PORT || 3000}`);
   const apiUrl = `${origin}/api/subscriptions?userID=${encodeURIComponent(
     userId
   )}`;
@@ -57,7 +57,7 @@ const Dashboard = async () => {
     return (
       <div style={{ padding: 16 }}>
         <h1>User not found</h1>
-        <p>Please sign in or ensure the user exists.</p>
+        <p>Please sign in.</p>
       </div>
     );
   }

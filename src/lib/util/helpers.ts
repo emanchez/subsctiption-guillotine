@@ -1,4 +1,4 @@
-import { Result } from "@/types/generics";
+import { Result } from "@/lib/types/generics";
 
 // Simple HttpError that carries an HTTP status code
 export class HttpError extends Error {

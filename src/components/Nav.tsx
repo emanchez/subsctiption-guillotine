@@ -1,7 +1,7 @@
-import { Props } from "@/util/props";
+import { Props } from "@/lib/util/props";
 import { JSX } from "react";
 import Link from "next/link";
-import { User } from "@/types/user";
+import { User } from "@/lib/types/user";
 
 // properties exclusive to navigation
 interface NavProps extends Props {

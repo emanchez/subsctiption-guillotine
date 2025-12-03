@@ -1,5 +1,5 @@
 import React from "react";
-import { Props } from "@/util/props";
+import { Props } from "@/lib/util/props";
 import { User } from "@prisma/client";
 
 export interface SubContainerProps extends Props {
