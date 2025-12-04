@@ -1,19 +1,25 @@
-export type SubscriptionCycle = "monthly" | "yearly";
-export type SubscriptionCategory =
-  | "entertainment" // youtube, netflix, xbox, spotify, etc
-  | "fitness" // gym, workout plans
-  | "shopping" // amazon prime
-  | "development" // aws, copilot premium,
-  | "productivity" // microsoft 365, zoom, jira, adobe CC
-  | "utilities" // Internet, phone, cloud storage
-  | "finance" // Banking fees, investment apps
-  | "education" // Courses, learning platforms
-  | "health" // Insurance, telemedicine
-  | "news" // NYT, WSJ subscriptions
-  | "food" // Meal kits, uber/grubhub premium plans
-  | "transportation" // Public transit, parking
-  | "other"; // Catch-all for miscellaneous
-export type ReminderTimeframe = "days" | "hours" | "weeks";
+export const SUBSCRIPTION_CYCLES = ["monthly", "yearly"] as const;
+export type SubscriptionCycle = (typeof SUBSCRIPTION_CYCLES)[number];
+
+export const SUBSCRIPTION_CATEGORIES = [
+  "entertainment", // youtube, netflix, xbox, spotify, etc
+  "fitness", // gym, workout plans
+  "shopping", // amazon prime
+  "development", // aws, copilot premium,
+  "productivity", // microsoft 365, zoom, jira, adobe CC
+  "utilities", // Internet, phone, cloud storage
+  "finance", // Banking fees, investment apps
+  "education", // Courses, learning platforms
+  "health", // Insurance, telemedicine
+  "news", // NYT, WSJ subscriptions
+  "food", // Meal kits, uber/grubhub premium plans
+  "transportation", // Public transit, parking
+  "other", // Catch-all for miscellaneous
+] as const;
+export type SubscriptionCategory = (typeof SUBSCRIPTION_CATEGORIES)[number];
+
+export const REMINDER_TIMEFRAMES = ["days", "hours", "weeks"] as const;
+export type ReminderTimeframe = (typeof REMINDER_TIMEFRAMES)[number];
 export type ReminderAlert = {
   timeframe: ReminderTimeframe;
   value: number;

@@ -10,9 +10,8 @@ export class HttpError extends Error {
   }
 }
 
-// PROMISE HANDLERS
 // Small helpers to create a consistent Result<T> shape for success/failure
-const createSuccess = <T>(value: T, status = 200): Result<T> => {
+export const createSuccess = <T>(value: T, status = 200): Result<T> => {
   const result: Result<T> = {
     success: true,
     value: value,
@@ -22,7 +21,7 @@ const createSuccess = <T>(value: T, status = 200): Result<T> => {
 };
 
 // Creates a failure Result with an error message and status.
-const createFailure = <T>(error: string, status = 500): Result<T> => {
+export const createFailure = <T>(error: string, status = 500): Result<T> => {
   const result: Result<T> = {
     success: false,
     error: error,
@@ -31,6 +30,7 @@ const createFailure = <T>(error: string, status = 500): Result<T> => {
   return result;
 };
 
+// PROMISE HANDLER
 // Usage: wrap any async operation with safeAsync(() => fetchStuff())
 // Returns a typed Result<T> where callers can inspect `success`/`value`/`error` and `status`.
 export const safeAsync = async <T>(
@@ -50,3 +50,12 @@ export const safeAsync = async <T>(
     return createFailure<T>(msg);
   }
 };
+
+// VALIDATORS
+// check if type of input v matches predefined union type T[number]
+export const isOneOf =
+  <T extends readonly any[]>(list: T) =>
+  // Returns a type guard fn: when it returns true, TS narrows v to T[number].
+  (v: any): v is T[number] =>
+    // Runtime membership check. Casts are necessary to satisfy the compiler.
+    (list as readonly any[]).includes(v as any);
