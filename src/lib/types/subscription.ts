@@ -1,3 +1,4 @@
+// done this way for any future updates to the type that can carry accross the codebase
 export const SUBSCRIPTION_CYCLES = ["monthly", "yearly"] as const;
 export type SubscriptionCycle = (typeof SUBSCRIPTION_CYCLES)[number];
 

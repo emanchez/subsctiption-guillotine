@@ -50,12 +50,3 @@ export const safeAsync = async <T>(
     return createFailure<T>(msg);
   }
 };
-
-// VALIDATORS
-// check if type of input v matches predefined union type T[number]
-export const isOneOf =
-  <T extends readonly any[]>(list: T) =>
-  // Returns a type guard fn: when it returns true, TS narrows v to T[number].
-  (v: any): v is T[number] =>
-    // Runtime membership check. Casts are necessary to satisfy the compiler.
-    (list as readonly any[]).includes(v as any);

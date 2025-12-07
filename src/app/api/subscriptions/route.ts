@@ -39,7 +39,7 @@ export const GET = async (req: Request) => {
   });
 };
 
-//TODO: GET
+//TODO: POST
 
 //TODO: UPDATE
 

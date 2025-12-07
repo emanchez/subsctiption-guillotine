@@ -1,9 +1,7 @@
-"use client";
-import React from "react";
 import { SubContainerProps } from "./SubsContainer";
 import { ApiSubscription } from "@/lib/types/subscription";
 
-interface SubCardProps extends SubContainerProps {
+export interface SubCardProps extends SubContainerProps {
   subscription: ApiSubscription;
 }
 
