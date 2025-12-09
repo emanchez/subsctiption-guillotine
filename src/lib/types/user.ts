@@ -23,7 +23,7 @@ export type User = {
   id: string; // supabase auth
   email: string;
   username: string;
-  createdAt: Date;
+  createdAt: Date; // stored as UTC
   emailNotifications: boolean; // permission to alert user via email
   timezone: Timezone; // app relies on user's subscriptions renewal/payment dates so knowing TZ is critical
 };

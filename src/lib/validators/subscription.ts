@@ -90,3 +90,5 @@ const validateApiSub = (input: ApiSubscription): Result<ApiSubscription> => {
   // All checks passed
   return createSuccess(input);
 };
+
+export default validateApiSub;
