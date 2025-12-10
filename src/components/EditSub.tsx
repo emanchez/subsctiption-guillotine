@@ -1,22 +1,24 @@
 "use client";
 
 /**
- * Add Subscription Component
+ * Edit Subscription Component
  *
- * Form component for creating new subscriptions with validation and reminder management.
- * Provides a collapsible form interface with comprehensive input fields.
+ * Form component for editing existing subscriptions with pre-populated data.
+ * Provides the same interface as AddSub but with existing subscription data loaded.
  *
  * Features:
- * - Form validation for all required fields
- * - Dynamic reminder alert management (add/remove)
+ * - Pre-populated form fields from existing subscription
+ * - Form validation for all fields
+ * - Dynamic reminder alert management (add/remove/edit)
  * - Category and cycle selection dropdowns
- * - Real-time form state management
- * - API integration for subscription creation
+ * - API integration for subscription updates
  * - Success/error feedback with alerts
+ * - Cancel functionality to abort changes
  */
 
 import { useState } from "react";
 import {
+  ApiSubscription,
   SUBSCRIPTION_CYCLES,
   SUBSCRIPTION_CATEGORIES,
   REMINDER_TIMEFRAMES,
@@ -27,26 +29,29 @@ interface ReminderAlert {
   value: number;
 }
 
-const AddSub = () => {
-  // Form visibility and submission state
-  const [isFormVisible, setIsFormVisible] = useState(false);
+interface EditSubProps {
+  subscription: ApiSubscription;
+  onSave: (updatedSubscription: ApiSubscription) => void;
+  onCancel: () => void;
+}
+
+const EditSub = ({ subscription, onSave, onCancel }: EditSubProps) => {
+  // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Form data state with default values
+  // Form data state initialized with subscription data
   const [formData, setFormData] = useState({
-    name: "",
-    cost: "",
-    cycle: "monthly" as (typeof SUBSCRIPTION_CYCLES)[number],
-    renewalDate: "",
-    category: "" as (typeof SUBSCRIPTION_CATEGORIES)[number] | "",
-    notes: "",
-    reminderAlert: [] as ReminderAlert[],
+    name: subscription.name,
+    cost: subscription.cost.toString(),
+    cycle: subscription.cycle,
+    renewalDate: subscription.renewalDate
+      ? new Date(subscription.renewalDate).toISOString().split("T")[0]
+      : "",
+    category: subscription.category || "",
+    notes: subscription.notes || "",
+    reminderAlert: subscription.reminderAlert || ([] as ReminderAlert[]),
   });
 
-  /**
-   * Handles form submission for creating a new subscription
-   * Validates form data, submits to API, and handles success/error states
-   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -62,11 +67,10 @@ const AddSub = () => {
           formData.reminderAlert.length > 0
             ? formData.reminderAlert
             : undefined,
-        userId: "user-1", // TODO: Get from auth context
       };
 
-      const response = await fetch("/api/subscriptions", {
-        method: "POST",
+      const response = await fetch(`/api/subscriptions/${subscription.id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -74,27 +78,18 @@ const AddSub = () => {
       });
 
       if (response.ok) {
-        alert("Subscription added successfully!");
-        // Reset form to initial state
-        setFormData({
-          name: "",
-          cost: "",
-          cycle: "monthly",
-          renewalDate: "",
-          category: "",
-          notes: "",
-          reminderAlert: [],
-        });
-        setIsFormVisible(false);
-        // TODO: Refresh the subscription list instead of page reload
-        window.location.reload();
+        const result = await response.json();
+        onSave(result.value.subscription);
+        alert("Subscription updated successfully!");
       } else {
         const error = await response.json();
-        alert(`Failed to add subscription: ${error.error || "Unknown error"}`);
+        alert(
+          `Failed to update subscription: ${error.error || "Unknown error"}`
+        );
       }
     } catch (error) {
-      console.error("Failed to add subscription:", error);
-      alert("Failed to add subscription. Please try again.");
+      console.error("Failed to update subscription:", error);
+      alert("Failed to update subscription. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -136,25 +131,12 @@ const AddSub = () => {
     }));
   };
 
-  if (!isFormVisible) {
-    return (
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-        <button
-          onClick={() => setIsFormVisible(true)}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-medium"
-        >
-          + Add New Subscription
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="border bg-gray-900 rounded-lg p-6 shadow-sm bg-gray-50">
+    <div className="border rounded-lg p-6 shadow-sm bg-blue-50">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Add New Subscription</h3>
+        <h3 className="text-lg font-semibold">Edit Subscription</h3>
         <button
-          onClick={() => setIsFormVisible(false)}
+          onClick={onCancel}
           className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
         >
           Cancel
@@ -320,7 +302,7 @@ const AddSub = () => {
         <div className="flex justify-end gap-2">
           <button
             type="button"
-            onClick={() => setIsFormVisible(false)}
+            onClick={onCancel}
             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
             disabled={isSubmitting}
           >
@@ -328,10 +310,10 @@ const AddSub = () => {
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Adding..." : "Add Subscription"}
+            {isSubmitting ? "Updating..." : "Update Subscription"}
           </button>
         </div>
       </form>
@@ -339,4 +321,4 @@ const AddSub = () => {
   );
 };
 
-export default AddSub;
+export default EditSub;

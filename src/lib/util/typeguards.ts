@@ -18,8 +18,8 @@ export const isBoolean = (v: unknown): v is boolean => {
 // type checkers for literal/union types
 // check if type of input v matches predefined union type T[number]
 export const isOneOf =
-  <T extends readonly any[]>(list: T) =>
+  <T extends readonly unknown[]>(list: T) =>
   // Returns a type guard function: when it returns true, TS narrows v to T[number].
-  (v: any): v is T[number] =>
+  (v: unknown): v is T[number] =>
     // Runtime membership check. Casts are necessary to satisfy the compiler.
-    (list as readonly any[]).includes(v as any);
+    (list as readonly unknown[]).includes(v as unknown);

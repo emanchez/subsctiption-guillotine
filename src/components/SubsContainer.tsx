@@ -12,6 +12,15 @@ interface ChildProps {
   user?: User;
 }
 
+/**
+ * Subscription Container Component
+ *
+ * Wrapper component that provides user context to all child components.
+ * Uses React.Children.map to inject the user prop into each child component
+ * that accepts it, enabling user-specific functionality throughout the component tree.
+ *
+ * This pattern allows child components to access user data without explicit prop drilling.
+ */
 const SubsContainer = (props: SubContainerProps) => {
   const childrenWithProps = React.Children.map(props.children, (child) => {
     if (React.isValidElement<ChildProps>(child)) {
@@ -22,6 +31,7 @@ const SubsContainer = (props: SubContainerProps) => {
     }
     return child;
   });
+
   return (
     <div id={props.id} className={props.className} style={props.style}>
       {childrenWithProps}

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ApiSubscription } from "@/lib/types/subscription";
 
 const TestPage = () => {
   const [userId, setUserId] = useState("user-1");
-  const [resp, setResp] = useState<any>(null);
+  const [resp, setResp] = useState<ApiSubscription[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

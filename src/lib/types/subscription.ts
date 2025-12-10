@@ -56,3 +56,18 @@ export type ApiSubscription = {
   notes?: string;
   reminderAlert?: ReminderAlert[];
 };
+
+export type DbSubscription = {
+  id: number;
+  name: string;
+  cost: number;
+  cycle: SubscriptionCycle;
+  renewalDate: Date | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  userId: string;
+  isActive: boolean;
+  category?: SubscriptionCategory;
+  notes: string | null;
+  reminder: string | null; // JSON string from database
+};

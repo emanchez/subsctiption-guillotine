@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import fs from "fs/promises";
 import path from "path";
+import { User } from "../src/lib/types/user";
 
 // convert JSON data to SQLite data
 
@@ -19,7 +20,7 @@ async function main() {
   const usersRaw = await fs.readFile(path.join(dataDir, "users.json"), "utf8");
   const subsRaw = await fs.readFile(path.join(dataDir, "subs.json"), "utf8");
 
-  const users = JSON.parse(usersRaw) as any[];
+  const users = JSON.parse(usersRaw) as User[];
   const subsParsed = JSON.parse(subsRaw);
   const subs = Array.isArray(subsParsed)
     ? subsParsed
@@ -108,7 +109,9 @@ async function main() {
           isActive: s.isActive ?? true,
           category: s.category ?? null,
           notes: s.notes ?? null,
-          reminder: s.reminderAlert || s.reminder || null,
+          reminder: s.reminderAlert
+            ? JSON.stringify(s.reminderAlert)
+            : s.reminder || null,
         },
         create: {
           id: s.id,
@@ -122,7 +125,9 @@ async function main() {
           isActive: s.isActive ?? true,
           category: s.category ?? null,
           notes: s.notes ?? null,
-          reminder: s.reminderAlert || s.reminder || null,
+          reminder: s.reminderAlert
+            ? JSON.stringify(s.reminderAlert)
+            : s.reminder || null,
         },
       });
       subCount++;
