@@ -7,6 +7,7 @@ import {
   updateSubscriptionSchema,
   dbSubscriptionSchema,
 } from "@/lib/validators/subscription.zod";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 /**
  * PUT /api/subscriptions/[id]
@@ -32,6 +33,19 @@ export const PUT = async (
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) => {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const res = await safeAsync(async () => {
     const { id } = await params;
     const subscriptionId = parseInt(id);
@@ -53,12 +67,18 @@ export const PUT = async (
 
     const data = validation.data;
 
-    // Check if subscription exists
+    // Check if subscription exists and belongs to the authenticated user
     const existingSub = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
     });
     if (!existingSub) {
       throw new HttpError(404, "Subscription not found");
+    }
+    if (existingSub.userId !== user.id) {
+      throw new HttpError(
+        403,
+        "Forbidden: You can only update your own subscriptions"
+      );
     }
 
     // Prepare update data
@@ -111,6 +131,19 @@ export const DELETE = async (
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) => {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const res = await safeAsync(async () => {
     const { id } = await params;
     const subscriptionId = parseInt(id);
@@ -118,12 +151,18 @@ export const DELETE = async (
       throw new HttpError(400, "Invalid subscription ID");
     }
 
-    // Check if subscription exists
+    // Check if subscription exists and belongs to the authenticated user
     const existingSub = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
     });
     if (!existingSub) {
       throw new HttpError(404, "Subscription not found");
+    }
+    if (existingSub.userId !== user.id) {
+      throw new HttpError(
+        403,
+        "Forbidden: You can only delete your own subscriptions"
+      );
     }
 
     // Soft delete by marking as inactive

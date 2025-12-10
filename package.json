@@ -20,8 +20,11 @@
     "@prisma/adapter-better-sqlite3": "^7.0.1",
     "@prisma/adapter-libsql": "^7.0.1",
     "@prisma/client": "^7.0.1",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.87.1",
     "better-sqlite3": "^12.5.0",
-    "next": "16.0.6",
+    "next": "^16.0.8",
+    "next-auth": "^4.24.13",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "zod": "^4.1.13"

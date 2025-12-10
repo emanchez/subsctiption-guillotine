@@ -8,6 +8,7 @@ import {
   dbSubscriptionSchema,
 } from "@/lib/validators/subscription.zod";
 import { ZodIssue } from "zod";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 /**
  * GET /api/subscriptions
@@ -23,23 +24,29 @@ import { ZodIssue } from "zod";
  * - 500: Database error or validation failure
  */
 export const GET = async (req: Request) => {
-  const url = new URL(req.url);
-  const userID =
-    url.searchParams.get("userID") || req.headers.get("x-user-id") || null;
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const res = await safeAsync(async () => {
-    // Validate userID parameter
-    if (!userID) throw new HttpError(400, "Missing userID");
-
     // Verify user exists in database
-    const user = await prisma.user.findUnique({
-      where: { id: userID },
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
     });
-    if (!user) throw new HttpError(404, "User not found");
+    if (!dbUser) throw new HttpError(404, "User not found");
 
     // Fetch user's subscriptions ordered by renewal date
     const userSubs = await prisma.subscription.findMany({
-      where: { userId: userID },
+      where: { userId: user.id },
       orderBy: { renewalDate: "asc" },
     });
 
@@ -59,7 +66,7 @@ export const GET = async (req: Request) => {
     // Transform validated data to domain objects and serialize for API response
     const mapped = validatedSubs.map((s: DbSubscription) => apiSubToDomSub(s));
     const serialized = mapped.map(domainSubToApi);
-    return { user, subscriptions: serialized };
+    return { user: dbUser, subscriptions: serialized };
   });
 
   return new Response(JSON.stringify(res), {
@@ -90,11 +97,24 @@ export const GET = async (req: Request) => {
  * - 500: Database error
  */
 export const POST = async (req: Request) => {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const res = await safeAsync(async () => {
     // Parse and validate request body
     const body = await req.json();
 
-    // Validate input against creation schema
+    // Validate input against creation schema (but remove userId from validation since we get it from auth)
     const validation = createSubscriptionSchema.safeParse(body);
     if (!validation.success) {
       throw new HttpError(
@@ -105,20 +125,20 @@ export const POST = async (req: Request) => {
 
     const data = validation.data;
 
-    // Verify the user exists before creating subscription
-    const user = await prisma.user.findUnique({
-      where: { id: data.userId },
+    // Verify the authenticated user exists in database
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
     });
-    if (!user) throw new HttpError(404, "User not found");
+    if (!dbUser) throw new HttpError(404, "User not found");
 
-    // Create new subscription in database
+    // Create new subscription in database using authenticated user's ID
     const newSub = await prisma.subscription.create({
       data: {
         name: data.name,
         cost: data.cost,
         cycle: data.cycle,
         renewalDate: new Date(data.renewalDate),
-        userId: data.userId,
+        userId: user.id, // Use authenticated user's ID
         isActive: data.isActive,
         category: data.category,
         notes: data.notes,

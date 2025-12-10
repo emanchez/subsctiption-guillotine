@@ -63,7 +63,6 @@ export const createSubscriptionSchema = z.object({
     message: "Cycle must be 'monthly' or 'yearly'",
   }),
   renewalDate: z.string().datetime("Invalid renewal date format"),
-  userId: z.string().min(1, "User ID is required"),
   isActive: z.boolean().default(true),
   category: z.enum(SUBSCRIPTION_CATEGORIES).optional(),
   notes: z.string().optional(),
